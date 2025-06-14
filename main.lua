@@ -1,33 +1,35 @@
 function love.load()
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
-  width = 40
-  height = 200
+  local width = 40
+  local height = 200
 
-  x1 = 0
-  x2 = love.graphics.getWidth() - width
+  local x1 = 0
+  local x2 = love.graphics.getWidth() - width
 
-  y1 = (love.graphics.getHeight() / 2) - height/2
-  y2 = (love.graphics.getHeight() / 2) - height/2
+  local y1 = (love.graphics.getHeight() / 2) - height/2
+  local y2 = (love.graphics.getHeight() / 2) - height/2
+
+  Object = require "classic"
+  require "player"
+
+  player1 = Player(width, height, x1, y1, "w", "s")
+  player2 = Player(width, height, x2, y2, "up", "down")
 end
 
 function love.update(dt)
   --Movement player 1
-  if love.keyboard.isDown("w") and y1 > 0 then
-    y1 = y1 - 100 * dt
-  elseif love.keyboard.isDown("s") and y1 < screen_height - height then
-    y1 = y1 + 100 * dt
-  end
+  player1:move(dt)
 
   --Movement player 2
-  if love.keyboard.isDown("up") and y2 > 0 then
-    y2 = y2 - 100 * dt
-  elseif love.keyboard.isDown("down") and y2 < screen_height - height then
-    y2 = y2 + 100 * dt
-  end
+  player2:move(dt)
 end
 
 function love.draw()
-  love.graphics.rectangle("line", x1, y1, width, height)
-  love.graphics.rectangle("fill", x2, y2, width, height)
+  -- Players
+  player1:draw()
+  player2:draw()
+
+  -- Ball
+  love.graphics.circle("fill", 200, 200, 100)
 end
