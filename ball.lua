@@ -18,8 +18,16 @@ function Ball:move(dt)
 end
 
 function Ball:redirection()
-  local total_height = love.graphics.getHeight()
-  if self.y - self.radius < 0 or self.y + self.radius > total_height + self.radius then
+  local top = 0
+  local bottom = love.graphics.getHeight()
+
+  if self.y - self.radius < top then
+    self.y = top + self.radius
+    self.direction = -self.direction
+  end
+
+  if self.y + self.radius > bottom then
+    self.y = bottom - self.radius
     self.direction = -self.direction
   end
 end
