@@ -6,7 +6,7 @@ function love.load()
   x2 = love.graphics.getWidth() - width
 
   y1 = (love.graphics.getHeight() / 2) - height/2
-  y2 = (love.graphics.getHeight() / 2) - height
+  y2 = (love.graphics.getHeight() / 2) - height/2
 end
 
 function love.update(dt)
@@ -15,6 +15,13 @@ function love.update(dt)
     y1 = y1 - 100 * dt
   elseif love.keyboard.isDown("s") then
     y1 = y1 + 100 * dt
+  end
+
+  --Movement player 2
+  if love.keyboard.isDown("up") then
+    y2 = y2 - 100 * dt
+  elseif love.keyboard.isDown("down") then
+    y2 = y2 + 100 * dt
   end
 end
 
