@@ -1,4 +1,9 @@
+local options = { "PLAY", "OPTIONS", "QUIT GAME"}
+local selected = 1
+local gameStarted = false
+
 function love.load()
+
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
   local width = 40
@@ -47,12 +52,52 @@ function love.update(dt)
 end
 
 function love.draw()
-  -- Players
-  player1:draw()
-  player2:draw()
+  if not gameStarted then
+    drawMenu()
+  else
+    -- Players
+    player1:draw()
+    player2:draw()
 
-  -- Ball
-  ball:draw()
+    -- Ball
+    ball:draw()
+  end
+end
+
+function drawMenu()
+  love.graphics.setFont(love.graphics.newFont(100))
+  love.graphics.printf("PONG", 0, 150, love.graphics.getWidth(), "center")
+  
+  love.graphics.setFont(love.graphics.newFont(32))
+  for i, option in ipairs(options) do
+    local y = 300 + (i - 1) * 60
+    if i == selected then
+      love.graphics.setColor(1, 1, 0)
+    else
+      love.graphics.setColor(1, 1, 1)
+    end
+    love.graphics.printf(option, 0, y, love.graphics.getWidth(), "center")
+  end
+
+  love.graphics.setColor(1, 1, 1)
+end
+
+function love.keypressed(key)
+  if not gameStarted then
+    if key == "up" then
+      selected = selected - 1
+      if selected < 1 then selected = #options end
+    elseif key == "down" then
+      selected = selected + 1
+      if selected > #options then selected = 1 end
+    elseif key == "return" or key == "enter" then
+      if options[selected] == "PLAY" then
+        gameStarted = true
+      elseif options[selected] == "QUIT GAME" then
+        love.event.quit()
+      end
+    end
+  end
 end
 
 function checkCollision(player, ball)
