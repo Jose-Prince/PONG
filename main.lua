@@ -10,7 +10,11 @@ function love.load()
   local y1 = (love.graphics.getHeight() / 2) - height/2
   local y2 = (love.graphics.getHeight() / 2) - height/2
 
-  local angle = math.random(0, 365)
+  local angle = math.random(-45, 45)
+  if math.random(0, 1) == 1 then
+    angle = angle + 180
+  end
+  local radians = math.rad(angle)
 
   Object = require "classic"
   require "player"
@@ -18,7 +22,7 @@ function love.load()
 
   player1 = Player(width, height, x1, y1, "w", "s")
   player2 = Player(width, height, x2, y2, "up", "down")
-  ball = Ball(screen_width/2,screen_height/2,50, angle)
+  ball = Ball(screen_width/2,screen_height/2,50, radians)
 end
 
 function love.update(dt)
@@ -31,11 +35,15 @@ function love.update(dt)
   player2:move(dt)
 
   if ball.x > screen_width / 2 then 
-    hasCollision = checkCollision(player2, ball)
+    if checkCollision(player2, ball) then
+      ball:bounceOff(player2)
+    end
   else
-    hasCollision = checkCollision(player1, ball)
+    if checkCollision(player1, ball) then
+      ball:bounceOff(player1)
+    end
   end
-  ball:move(dt, hasCollision)
+  ball:move(dt)
 end
 
 function love.draw()
