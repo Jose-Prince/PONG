@@ -26,13 +26,14 @@ function love.load()
 end
 
 function love.update(dt)
-  local hasCollision = false
 
   --Movement player 1
   player1:move(dt)
 
   --Movement player 2
   player2:move(dt)
+
+  ball:move(dt)
 
   if ball.x > screen_width / 2 then 
     if checkCollision(player2, ball) then
@@ -43,7 +44,6 @@ function love.update(dt)
       ball:bounceOff(player1)
     end
   end
-  ball:move(dt)
 end
 
 function love.draw()

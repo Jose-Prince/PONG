@@ -35,12 +35,18 @@ end
 function Ball:bounceOff(player)
   local player_center = player.y + player.height / 2
   local offset = (self.y - player_center) / (player.height / 2)
+  offset = math.max(-1, math.min(1, offset))
 
   local MAX_BOUNCE_ANGLE = math.rad(60)
   local bounce_angle = offset * MAX_BOUNCE_ANGLE
 
-  local going_right = self.x < love.graphics.getWidth() / 2
-  local direction = going_right and 1 or -1
+  local going_right = math.cos(self.direction) > 0
 
-  self.direction = direction * math.pi / 2 + bounce_angle
+  if going_right then
+    self.direction = math.pi - bounce_angle
+    self.x = player.x - self.radius
+  else
+    self.direction = bounce_angle
+    self.x = player.x + player.width + self.radius
+  end
 end
