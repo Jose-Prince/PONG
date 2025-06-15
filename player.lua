@@ -20,3 +20,8 @@ function Player:move(dt)
     self.y = self.y + 100 * dt
   end
 end
+
+function Player:relocate(newX, newY)
+  self.x = newX
+  self.y = newY
+end

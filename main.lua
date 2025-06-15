@@ -24,8 +24,7 @@ function love.load()
   local x1 = 0
   local x2 = love.graphics.getWidth() - width
 
-  local y1 = (love.graphics.getHeight() / 2) - height/2
-  local y2 = (love.graphics.getHeight() / 2) - height/2
+  local y = (love.graphics.getHeight() / 2) - height/2
 
   local angle = math.random(-45, 45)
   if math.random(0, 1) == 1 then
@@ -37,8 +36,8 @@ function love.load()
   require "player"
   require "ball"
 
-  player1 = Player(width, height, x1, y1, "w", "s")
-  player2 = Player(width, height, x2, y2, "up", "down")
+  player1 = Player(width, height, x1, y, "w", "s")
+  player2 = Player(width, height, x2, y, "up", "down")
   ball = Ball(screen_width/2,screen_height/2,50, radians)
 end
 
@@ -201,4 +200,15 @@ function resizeWindow()
 
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
+
+  relocateObjects()
+end
+
+function relocateObjects()
+  local height = 200
+  local width = 40
+
+  player1:relocate(0, (love.graphics.getHeight() / 2) - height/2)
+  player2:relocate(love.graphics.getWidth() - width, (love.graphics.getHeight() / 2) - height/2)
+  ball:relocate(screen_width/2,screen_height/2)
 end

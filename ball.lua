@@ -50,3 +50,8 @@ function Ball:bounceOff(player)
     self.x = player.x + player.width + self.radius
   end
 end
+
+function Ball:relocate(newX, newY)
+  self.x = newX
+  self.y = newY
+end
