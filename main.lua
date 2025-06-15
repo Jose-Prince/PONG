@@ -8,11 +8,14 @@ local selected_settings = 1
 local colors = { "BLACK", "BLUE", "GREEN", "ORANGE", "RED" }
 local rgb_colors = { {0, 0, 0}, {0, 0, 255}, {0, 255, 0}, {255, 165, 0}, {255, 0, 0} }
 local sizes = { "SMALL", "MEDIUM", "BIG", "FULL SCREEN" }
+local num_sizes = {{400, 300}, {800, 600}, {1200, 1000}}
 
 local actual_color = 1
 local actual_size = 2
 
 function love.load()
+  love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
+
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
   local width = 40
@@ -161,9 +164,11 @@ function love.keypressed(key)
       if key == "right" then
         actual_size = actual_size + 1
         if actual_size > #sizes then actual_size = 1 end
+        resizeWindow()
       elseif key == "left" then
         actual_size = actual_size - 1
         if actual_size < 1 then actual_size = #sizes end
+        resizeWindow()
       end
     end
   end
@@ -186,11 +191,14 @@ function checkCollision(player, ball)
     and player_top < ball_bottom
 end
 
-function indexOf(array, value)
-  for i, v in ipairs(array) do
-    if v == value then
-      return i
-    end
+function resizeWindow()
+  if sizes[actual_size] == "FULL SCREEN" then
+    love.window.setMode(0, 0, {fullscreen=true})
+  else
+    local w, h = num_sizes[actual_size][1], num_sizes[actual_size][2]
+    love.window.setMode(w, h, {fullscreen=false, resizable=false})
   end
-  return nil
+
+  screen_width = love.graphics.getWidth()
+  screen_height = love.graphics.getHeight()
 end
