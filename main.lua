@@ -1,9 +1,18 @@
-local options = { "PLAY", "OPTIONS", "QUIT GAME"}
+local options = { "PLAY", "SETTINGS", "QUIT GAME"}
 local selected = 1
 local gameStarted = false
+local optionStarted = false
+
+local settings = { "BACKGROUND", "SCREEN SIZE"}
+local selected_settings = 1
+local colors = { "BLACK", "BLUE", "GREEN", "ORANGE", "RED" }
+local rgb_colors = { {0, 0, 0}, {0, 0, 255}, {0, 255, 0}, {255, 165, 0}, {255, 0, 0} }
+local sizes = { "SMALL", "MEDIUM", "BIG", "FULL SCREEN" }
+
+local actual_color = 1
+local actual_size = 2
 
 function love.load()
-
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
   local width = 40
@@ -31,6 +40,9 @@ function love.load()
 end
 
 function love.update(dt)
+  if not gameStarted or optionStarted then
+    return
+  end
 
   --Movement player 1
   player1:move(dt)
@@ -52,9 +64,13 @@ function love.update(dt)
 end
 
 function love.draw()
-  if not gameStarted then
+  local r,g, b = love.math.colorFromBytes(rgb_colors[actual_color][1], rgb_colors[actual_color][2], rgb_colors[actual_color][3])
+  love.graphics.setBackgroundColor(r, g, b)
+  if not gameStarted and not optionStarted then
     drawMenu()
-  else
+  elseif optionStarted then
+    drawSettings()
+  elseif gameStarted then
     -- Players
     player1:draw()
     player2:draw()
@@ -67,7 +83,7 @@ end
 function drawMenu()
   love.graphics.setFont(love.graphics.newFont(100))
   love.graphics.printf("PONG", 0, 150, love.graphics.getWidth(), "center")
-  
+
   love.graphics.setFont(love.graphics.newFont(32))
   for i, option in ipairs(options) do
     local y = 300 + (i - 1) * 60
@@ -82,8 +98,30 @@ function drawMenu()
   love.graphics.setColor(1, 1, 1)
 end
 
+function drawSettings()
+  love.graphics.setFont(love.graphics.newFont(32))
+  love.graphics.printf("SETTINGS ", 0, 50, love.graphics.getWidth(), "center")
+
+  for i, option in ipairs(settings) do
+    local y = 100 + (i - 1) * 60
+    if i == selected_settings then
+      love.graphics.setColor(1, 1, 0)
+    else
+      love.graphics.setColor(1, 1, 1)
+    end
+    love.graphics.printf(option, 10, y, love.graphics.getWidth(), "left")
+    if option == "BACKGROUND" then
+      love.graphics.printf(colors[actual_color], -10, y, love.graphics.getWidth(), "right")
+    else
+      love.graphics.printf(sizes[actual_size], -10, y, love.graphics.getWidth(), "right")
+    end
+  end
+
+  love.graphics.setColor(1, 1, 1)
+end
+
 function love.keypressed(key)
-  if not gameStarted then
+  if not gameStarted and not optionStarted then
     if key == "up" then
       selected = selected - 1
       if selected < 1 then selected = #options end
@@ -93,8 +131,39 @@ function love.keypressed(key)
     elseif key == "return" or key == "enter" then
       if options[selected] == "PLAY" then
         gameStarted = true
+      elseif options[selected] == "SETTINGS" then
+        optionStarted = true
       elseif options[selected] == "QUIT GAME" then
         love.event.quit()
+      end
+    end
+  elseif optionStarted then
+    if key == "up" then
+      selected_settings = selected_settings - 1
+      if selected_settings < 1 then selected_settings = #settings end
+    elseif key == "down" then
+      selected_settings = selected_settings + 1
+      if selected_settings > #settings then selected_settings = 1 end
+    elseif key == "escape" then
+      optionStarted = false
+    elseif key == "return" or key == "enter" then
+      print("Seleccionaste: ", actual_color)
+      -- Aquí podrías implementar comportamiento real para cada configuración
+    elseif selected_settings == 1 then
+      if key == "right" then
+        actual_color = actual_color + 1
+        if actual_color > #colors then actual_color = 1 end
+      elseif key == "left" then
+        actual_color = actual_color - 1
+        if actual_color < 1 then actual_color = #colors end
+      end
+    elseif selected_settings == 2 then
+      if key == "right" then
+        actual_size = actual_size + 1
+        if actual_size > #sizes then actual_size = 1 end
+      elseif key == "left" then
+        actual_size = actual_size - 1
+        if actual_size < 1 then actual_size = #sizes end
       end
     end
   end
@@ -115,4 +184,13 @@ function checkCollision(player, ball)
     and player_left < ball_right
     and player_bottom > ball_top
     and player_top < ball_bottom
+end
+
+function indexOf(array, value)
+  for i, v in ipairs(array) do
+    if v == value then
+      return i
+    end
+  end
+  return nil
 end
