@@ -112,7 +112,7 @@ function drawMenu()
 end
 
 function drawSettings()
-  love.graphics.setFont(love.graphics.newFont(32))
+  love.graphics.setFont(font_medium)
   love.graphics.printf("SETTINGS ", 0, 50, love.graphics.getWidth(), "center")
 
   for i, option in ipairs(settings) do
