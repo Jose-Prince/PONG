@@ -1,3 +1,5 @@
+local font_medium
+local font_large
 local options = { "PLAY", "SETTINGS", "QUIT GAME"}
 local selected = 1
 local gameStarted = false
@@ -14,6 +16,8 @@ local actual_color = 1
 local actual_size = 2
 
 function love.load()
+  font_medium = love.graphics.newFont("font/Minecraft.ttf", 32)
+  font_large = love.graphics.newFont("font/Minecraft.ttf", 100)
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
 
   screen_width = love.graphics.getWidth()
@@ -63,6 +67,8 @@ function love.update(dt)
       ball:bounceOff(player1)
     end
   end
+
+  ball:checkPoint()
 end
 
 function love.draw()
@@ -83,10 +89,10 @@ function love.draw()
 end
 
 function drawMenu()
-  love.graphics.setFont(love.graphics.newFont(100))
+  love.graphics.setFont(font_large)
   love.graphics.printf("PONG", 0, 150, love.graphics.getWidth(), "center")
 
-  love.graphics.setFont(love.graphics.newFont(32))
+  love.graphics.setFont(font_medium)
   for i, option in ipairs(options) do
     local y = 300 + (i - 1) * 60
     if i == selected then
