@@ -15,6 +15,8 @@ local num_sizes = {{400, 300}, {800, 600}, {1200, 1000}}
 local actual_color = 1
 local actual_size = 2
 
+local keyPressTimes = {}
+
 function love.load()
   font_medium = love.graphics.newFont("font/Minecraft.ttf", 32)
   font_large = love.graphics.newFont("font/Minecraft.ttf", 100)
@@ -181,6 +183,20 @@ function love.keypressed(key)
         resizeWindow()
       end
     end
+  elseif gameStarted then
+    keyPressTimes[key] = love.timer.getTime()
+  end
+end
+
+function love.keyreleased(key)
+  local pressTime = keyPressTimes[key]
+  if pressTime then
+    local releaseTime = love.timer.getTime()
+    local duration = releaseTime - pressTime
+    if key == "escape" and duration >= 3.0 then
+      gameStarted = false
+    end
+    keyPressTimes[key] = nil
   end
 end
 
