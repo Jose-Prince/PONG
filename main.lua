@@ -39,10 +39,12 @@ function love.load()
   Object = require "classic"
   require "player"
   require "ball"
+  require "scorepoint"
 
   player1 = Player(width, height, x1, y, "w", "s")
   player2 = Player(width, height, x2, y, "up", "down")
   ball = Ball(screen_width/2,screen_height/2,50, radians)
+  scorepoint = Scorepoint()
 end
 
 function love.update(dt)
@@ -85,6 +87,9 @@ function love.draw()
 
     -- Ball
     ball:draw()
+
+    -- Scores
+    scorepoint:draw()
   end
 end
 
