@@ -55,3 +55,13 @@ function Ball:relocate(newX, newY)
   self.x = newX
   self.y = newY
 end
+
+function Ball:checkPoint()
+  if self.x < 0 then
+    return 2
+  elseif self.x > love.graphics.getWidth() then
+    return 1
+  else
+    return 0
+  end
+end

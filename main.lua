@@ -1,9 +1,16 @@
+Object = require "classic"
+require "player"
+require "ball"
+require "scorepoint"
+require "winnerScreen"
+
 local font_medium
 local font_large
 local options = { "PLAY", "SETTINGS", "QUIT GAME"}
 local selected = 1
 local gameStarted = false
 local optionStarted = false
+local roundEnd = false
 
 local settings = { "BACKGROUND", "SCREEN SIZE"}
 local selected_settings = 1
@@ -17,13 +24,23 @@ local actual_size = 2
 
 local keyPressTimes = {}
 
+local ball
+local player1
+local player2
+local scorepoint
+local winnerScreen
+
+local screen_width = love.graphics.getWidth()
+local screen_height = love.graphics.getHeight()
+
+
+local lastScorer = 0
+
 function love.load()
   font_medium = love.graphics.newFont("font/Minecraft.ttf", 32)
   font_large = love.graphics.newFont("font/Minecraft.ttf", 100)
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
 
-  screen_width = love.graphics.getWidth()
-  screen_height = love.graphics.getHeight()
   local width = 40
   local height = 200
 
@@ -32,21 +49,12 @@ function love.load()
 
   local y = (love.graphics.getHeight() / 2) - height/2
 
-  local angle = math.random(-45, 45)
-  if math.random(0, 1) == 1 then
-    angle = angle + 180
-  end
-  local radians = math.rad(angle)
-
-  Object = require "classic"
-  require "player"
-  require "ball"
-  require "scorepoint"
 
   player1 = Player(width, height, x1, y, "w", "s")
   player2 = Player(width, height, x2, y, "up", "down")
-  ball = Ball(screen_width/2,screen_height/2,50, radians)
+  ball = Ball(screen_width/2,screen_height/2,50, calculateBallDirection())
   scorepoint = Scorepoint()
+  winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
 end
 
 function love.update(dt)
@@ -60,7 +68,9 @@ function love.update(dt)
   --Movement player 2
   player2:move(dt)
 
-  ball:move(dt)
+  if not roundEnd then
+    ball:move(dt)
+  end
 
   if ball.x > screen_width / 2 then 
     if checkCollision(player2, ball) then
@@ -72,7 +82,13 @@ function love.update(dt)
     end
   end
 
-  ball:checkPoint()
+  local player_point = ball:checkPoint()
+  if player_point ~= 0 then
+    scorepoint:update(player_point)
+    roundEnd = true
+    lastScorer = player_point
+    winnerScreen.startTime = love.timer.getTime()
+  end
 end
 
 function love.draw()
@@ -80,6 +96,9 @@ function love.draw()
   love.graphics.setBackgroundColor(r, g, b)
   if not gameStarted and not optionStarted then
     drawMenu()
+    scorepoint = Scorepoint()
+    roundEnd = false
+    ball = Ball(screen_width/2,screen_height/2,50, calculateBallDirection())
   elseif optionStarted then
     drawSettings()
   elseif gameStarted then
@@ -87,11 +106,19 @@ function love.draw()
     player1:draw()
     player2:draw()
 
-    -- Ball
-    ball:draw()
+    if roundEnd then
+      ball.x = screen_width / 2
+    else
+      -- Ball
+      ball:draw()
+    end
 
     -- Scores
     scorepoint:draw()
+
+    if roundEnd then
+      roundEnd = winnerScreen:draw(lastScorer)
+    end
   end
 end
 
@@ -238,4 +265,15 @@ function relocateObjects()
   player1:relocate(0, (love.graphics.getHeight() / 2) - height/2)
   player2:relocate(love.graphics.getWidth() - width, (love.graphics.getHeight() / 2) - height/2)
   ball:relocate(screen_width/2,screen_height/2)
+  winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
+end
+
+-- Calculate initial direction of ball
+function calculateBallDirection()
+  local angle = math.random(-45, 45)
+    if math.random(0, 1) == 1 then
+      angle = angle + 180
+    end
+  return math.rad(angle)
+
 end
