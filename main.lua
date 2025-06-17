@@ -36,13 +36,13 @@ local screen_height
 local lastScorer = 0
 
 function love.load()
-  font_medium = love.graphics.newFont("font/Minecraft.ttf", 32)
-  font_large = love.graphics.newFont("font/Minecraft.ttf", 100)
-
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
 
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
+
+  font_medium = love.graphics.newFont("font/Minecraft.ttf", screen_height/18)
+  font_large = love.graphics.newFont("font/Minecraft.ttf", screen_height/6)
 
   local width = screen_height/32
   local height = screen_height/5
@@ -124,29 +124,31 @@ function love.draw()
 end
 
 function drawMenu()
+  local y = screen_height / 1.7
   love.graphics.setFont(font_large)
-  love.graphics.printf("PONG", 0, 150, love.graphics.getWidth(), "center")
+  love.graphics.printf("PONG", 0, screen_height/4, love.graphics.getWidth(), "center")
 
   love.graphics.setFont(font_medium)
   for i, option in ipairs(options) do
-    local y = 300 + (i - 1) * 60
     if i == selected then
       love.graphics.setColor(1, 1, 0)
     else
       love.graphics.setColor(1, 1, 1)
     end
     love.graphics.printf(option, 0, y, love.graphics.getWidth(), "center")
+    y = y + screen_height / 10
   end
 
   love.graphics.setColor(1, 1, 1)
 end
 
 function drawSettings()
+  local y = screen_height / 5
   love.graphics.setFont(font_medium)
-  love.graphics.printf("SETTINGS ", 0, 50, love.graphics.getWidth(), "center")
+  love.graphics.printf("SETTINGS ", 0, screen_height/10, love.graphics.getWidth(), "center")
+
 
   for i, option in ipairs(settings) do
-    local y = 100 + (i - 1) * 60
     if i == selected_settings then
       love.graphics.setColor(1, 1, 0)
     else
@@ -158,6 +160,7 @@ function drawSettings()
     else
       love.graphics.printf(sizes[actual_size], -10, y, love.graphics.getWidth(), "right")
     end
+    y = y + screen_height / 12
   end
 
   love.graphics.setColor(1, 1, 1)
@@ -247,6 +250,9 @@ function resizeWindow()
 
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
+
+  font_medium = love.graphics.newFont("font/Minecraft.ttf", screen_height/18)
+  font_large = love.graphics.newFont("font/Minecraft.ttf", screen_height/6)
 
   relocateObjects()
 end
