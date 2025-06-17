@@ -44,8 +44,8 @@ function love.load()
   screen_width = love.graphics.getWidth()
   screen_height = love.graphics.getHeight()
 
-  local width = 40
-  local height = 200
+  local width = screen_height/32
+  local height = screen_height/5
 
   local x1 = 0
   local x2 = love.graphics.getWidth() - width
@@ -54,7 +54,6 @@ function love.load()
 
   player1 = Player(width, height, x1, y, "w", "s")
   player2 = Player(width, height, x2, y, "up", "down")
-  ball = Ball(screen_width/2,screen_height/2, screen_height/32, calculateBallDirection())
   scorepoint = Scorepoint()
   winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
 end
@@ -100,7 +99,7 @@ function love.draw()
     drawMenu()
     scorepoint = Scorepoint()
     roundEnd = false
-    ball = Ball(screen_width/2,screen_height/2, screen_height/32, calculateBallDirection())
+    ball = Ball(screen_width/2,screen_height/2, screen_height/64, calculateBallDirection())
   elseif optionStarted then
     drawSettings()
   elseif gameStarted then
@@ -253,11 +252,16 @@ function resizeWindow()
 end
 
 function relocateObjects()
-  local height = 200
-  local width = 40
+  local height = screen_height/5
+  local width = screen_height/32
 
-  player1:relocate(0, (love.graphics.getHeight() / 2) - height/2)
-  player2:relocate(love.graphics.getWidth() - width, (love.graphics.getHeight() / 2) - height/2)
+  local x1 = 0
+  local x2 = love.graphics.getWidth() - width
+
+  local y = (love.graphics.getHeight() / 2) - height/2
+
+  player1 = Player(width, height, x1, y, "w", "s")
+  player2 = Player(width, height, x2, y, "up", "down")
   ball = Ball(screen_width/2, screen_height/2, screen_width/64, calculateBallDirection())
   winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
 end
