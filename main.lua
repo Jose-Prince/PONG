@@ -2,7 +2,7 @@ Object = require "classic"
 require "player"
 require "ball"
 require "scorepoint"
-require "winnerScreen"
+require "msgScreen"
 
 local font_medium
 local font_large
@@ -11,6 +11,7 @@ local selected = 1
 local gameStarted = false
 local optionStarted = false
 local roundEnd = false
+local isPaused = false
 
 local settings = { "BACKGROUND", "SCREEN SIZE"}
 local selected_settings = 1
@@ -28,12 +29,13 @@ local ball
 local player1
 local player2
 local scorepoint
-local winnerScreen
+local msgScreen
 
 local screen_width
 local screen_height
 
 local lastScorer = 0
+local speed
 
 function love.load()
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
@@ -52,10 +54,12 @@ function love.load()
 
   local y = (love.graphics.getHeight() / 2) - height/2
 
-  player1 = Player(width, height, x1, y, "w", "s")
-  player2 = Player(width, height, x2, y, "up", "down")
+  speed = 5 * screen_width / 8
+
+  player1 = Player(width, height, x1, y, "w", "s", 3 * speed / 4)
+  player2 = Player(width, height, x2, y, "up", "down", 3 * speed / 4)
   scorepoint = Scorepoint()
-  winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
+  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
 end
 
 function love.update(dt)
@@ -63,14 +67,17 @@ function love.update(dt)
     return
   end
 
-  --Movement player 1
-  player1:move(dt)
+  if not isPaused then
+    --Movement player 1
+    player1:move(dt)
 
-  --Movement player 2
-  player2:move(dt)
+    --Movement player 2
+    player2:move(dt)
 
-  if not roundEnd then
-    ball:move(dt)
+    if not roundEnd then
+      ball:move(dt)
+    end
+
   end
 
   if ball.x > screen_width / 2 then 
@@ -88,7 +95,7 @@ function love.update(dt)
     scorepoint:update(player_point)
     roundEnd = true
     lastScorer = player_point
-    winnerScreen.startTime = love.timer.getTime()
+    msgScreen.startTime = love.timer.getTime()
   end
 end
 
@@ -99,26 +106,38 @@ function love.draw()
     drawMenu()
     scorepoint = Scorepoint()
     roundEnd = false
-    ball = Ball(screen_width/2,screen_height/2, screen_height/64, calculateBallDirection())
+    ball = Ball(screen_width/2,screen_height/2, screen_height/64, calculateBallDirection(), speed)
   elseif optionStarted then
     drawSettings()
   elseif gameStarted then
-    -- Players
-    player1:draw()
-    player2:draw()
+    if isPaused then
 
-    if roundEnd then
-      ball.x = screen_width / 2
+      -- Scores
+      scorepoint:draw()
+
+      msgScreen:draw(lastScorer)
+      player1:draw()
+      player2:draw()
+
     else
-      -- Ball
-      ball:draw()
+      -- Players
+      player1:draw()
+      player2:draw()
+
+      if roundEnd then
+        ball.x = screen_width / 2
+      else
+        -- Ball
+        ball:draw()
+      end
+
+      -- Scores
+      scorepoint:draw()
     end
 
-    -- Scores
-    scorepoint:draw()
 
     if roundEnd then
-      roundEnd = winnerScreen:draw(lastScorer)
+      roundEnd = msgScreen:draw(lastScorer)
     end
   end
 end
@@ -218,7 +237,13 @@ function love.keypressed(key)
     if key == "escape" then
       gameStarted = false
     elseif key == "space" then
+      isPaused = not isPaused
       -- Pause the game
+      if msgScreen.type == "score" then
+        msgScreen.type = "pause"
+      elseif msgScreen.type == "pause" then
+        msgScreen.type = "score"
+      end
     end
   end
 end
@@ -266,10 +291,12 @@ function relocateObjects()
 
   local y = (love.graphics.getHeight() / 2) - height/2
 
-  player1 = Player(width, height, x1, y, "w", "s")
-  player2 = Player(width, height, x2, y, "up", "down")
-  ball = Ball(screen_width/2, screen_height/2, screen_width/64, calculateBallDirection())
-  winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
+  speed = 5 * screen_width / 8
+
+  player1 = Player(width, height, x1, y, "w", "s", 3 * speed / 4)
+  player2 = Player(width, height, x2, y, "up", "down", 3 * speed / 4)
+  ball = Ball(screen_width/2, screen_height/2, screen_width/64, calculateBallDirection(), speed)
+  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
 end
 
 -- Calculate initial direction of ball

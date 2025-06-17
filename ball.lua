@@ -1,10 +1,11 @@
 Ball = Object.extend(Object)
 
-function Ball:new(x, y, radius, direction)
+function Ball:new(x, y, radius, direction, speed)
   self.x = x
   self.y = y
   self.radius = radius
   self.direction = direction
+  self.speed = speed or 100
 end
 
 function Ball:draw()
@@ -12,8 +13,8 @@ function Ball:draw()
 end
 
 function Ball:move(dt)
-  self.y = self.y + (100 * math.sin(self.direction)) * dt
-  self.x = self.x + (100 * math.cos(self.direction)) * dt
+  self.y = self.y + (self.speed * math.sin(self.direction)) * dt
+  self.x = self.x + (self.speed * math.cos(self.direction)) * dt
   self:redirection()
 end
 
