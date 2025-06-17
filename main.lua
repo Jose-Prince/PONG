@@ -23,8 +23,6 @@ local num_sizes = {{400, 300}, {800, 600}, {1200, 1000}}
 local actual_color = 1
 local actual_size = 2
 
-local keyPressTimes = {}
-
 local ball
 local player1
 local player2
@@ -58,8 +56,8 @@ function love.load()
 
   player1 = Player(width, height, x1, y, "w", "s", 3 * speed / 4)
   player2 = Player(width, height, x2, y, "up", "down", 3 * speed / 4)
-  scorepoint = Scorepoint()
-  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
+  scorepoint = Scorepoint(rgb_colors[actual_color])
+  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3, rgb_colors[actual_color])
 end
 
 function love.update(dt)
@@ -104,7 +102,7 @@ function love.draw()
   love.graphics.setBackgroundColor(r, g, b)
   if not gameStarted and not optionStarted then
     drawMenu()
-    scorepoint = Scorepoint()
+    scorepoint = Scorepoint(rgb_colors[actual_color])
     roundEnd = false
     ball = Ball(screen_width/2,screen_height/2, screen_height/64, calculateBallDirection(), speed)
   elseif optionStarted then
@@ -218,9 +216,13 @@ function love.keypressed(key)
       if key == "right" then
         actual_color = actual_color + 1
         if actual_color > #colors then actual_color = 1 end
+        msgScreen.color = rgb_colors[actual_color]
+        scorepoint.color = rgb_colors[actual_color]
       elseif key == "left" then
         actual_color = actual_color - 1
         if actual_color < 1 then actual_color = #colors end
+        msgScreen.color = rgb_colors[actual_color]
+        scorepoint.color = rgb_colors[actual_color]
       end
     elseif selected_settings == 2 then
       if key == "right" then
@@ -296,7 +298,7 @@ function relocateObjects()
   player1 = Player(width, height, x1, y, "w", "s", 3 * speed / 4)
   player2 = Player(width, height, x2, y, "up", "down", 3 * speed / 4)
   ball = Ball(screen_width/2, screen_height/2, screen_width/64, calculateBallDirection(), speed)
-  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
+  msgScreen = MsgScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2, rgb_colors[actual_color])
 end
 
 -- Calculate initial direction of ball
