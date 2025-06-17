@@ -51,11 +51,6 @@ function Ball:bounceOff(player)
   end
 end
 
-function Ball:relocate(newX, newY)
-  self.x = newX
-  self.y = newY
-end
-
 function Ball:checkPoint()
   if self.x < 0 then
     return 2

@@ -30,16 +30,19 @@ local player2
 local scorepoint
 local winnerScreen
 
-local screen_width = love.graphics.getWidth()
-local screen_height = love.graphics.getHeight()
-
+local screen_width
+local screen_height
 
 local lastScorer = 0
 
 function love.load()
   font_medium = love.graphics.newFont("font/Minecraft.ttf", 32)
   font_large = love.graphics.newFont("font/Minecraft.ttf", 100)
+
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
+
+  screen_width = love.graphics.getWidth()
+  screen_height = love.graphics.getHeight()
 
   local width = 40
   local height = 200
@@ -49,10 +52,9 @@ function love.load()
 
   local y = (love.graphics.getHeight() / 2) - height/2
 
-
   player1 = Player(width, height, x1, y, "w", "s")
   player2 = Player(width, height, x2, y, "up", "down")
-  ball = Ball(screen_width/2,screen_height/2,50, calculateBallDirection())
+  ball = Ball(screen_width/2,screen_height/2, screen_height/32, calculateBallDirection())
   scorepoint = Scorepoint()
   winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/3)
 end
@@ -98,7 +100,7 @@ function love.draw()
     drawMenu()
     scorepoint = Scorepoint()
     roundEnd = false
-    ball = Ball(screen_width/2,screen_height/2,50, calculateBallDirection())
+    ball = Ball(screen_width/2,screen_height/2, screen_height/32, calculateBallDirection())
   elseif optionStarted then
     drawSettings()
   elseif gameStarted then
@@ -211,19 +213,11 @@ function love.keypressed(key)
       end
     end
   elseif gameStarted then
-    keyPressTimes[key] = love.timer.getTime()
-  end
-end
-
-function love.keyreleased(key)
-  local pressTime = keyPressTimes[key]
-  if pressTime then
-    local releaseTime = love.timer.getTime()
-    local duration = releaseTime - pressTime
-    if key == "escape" and duration >= 3.0 then
+    if key == "escape" then
       gameStarted = false
+    elseif key == "space" then
+      -- Pause the game
     end
-    keyPressTimes[key] = nil
   end
 end
 
@@ -264,7 +258,7 @@ function relocateObjects()
 
   player1:relocate(0, (love.graphics.getHeight() / 2) - height/2)
   player2:relocate(love.graphics.getWidth() - width, (love.graphics.getHeight() / 2) - height/2)
-  ball:relocate(screen_width/2,screen_height/2)
+  ball = Ball(screen_width/2, screen_height/2, screen_width/64, calculateBallDirection())
   winnerScreen = WinnerScreen(screen_width/2,screen_height/2, screen_width/2, screen_width/2)
 end
 
