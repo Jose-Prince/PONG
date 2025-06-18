@@ -26,11 +26,15 @@ function Ball:redirection()
   if self.y - self.radius < top then
     self.y = top + self.radius
     self.direction = -self.direction
+    local sfx = collideSound:clone()
+    sfx:play()
   end
 
   if self.y + self.radius > bottom then
     self.y = bottom - self.radius
     self.direction = -self.direction
+    local sfx = collideSound:clone()
+    sfx:play()
   end
 end
 

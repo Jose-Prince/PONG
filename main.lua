@@ -34,8 +34,18 @@ local screen_height
 
 local lastScorer = 0
 local speed
+local timer = 0
 
 function love.load()
+  backgroundMusic = love.audio.newSource("music/Undertale-Papyrus-Theme.ogg", "stream")
+  backgroundMusic:setLooping(true)
+  backgroundMusic:setVolume(0.3)
+  backgroundMusic:play()
+
+  collideSound = love.audio.newSource("music/gameboy-pluck-41265.ogg", "static")
+  collideSound:setLooping(false)
+  collideSound:setVolume(0.5)
+
   love.window.setMode(num_sizes[actual_size][1], num_sizes[actual_size][2], {resizable=false, vsync=0, minwidth=400, minheight=300})
 
   screen_width = love.graphics.getWidth()
@@ -61,6 +71,7 @@ function love.load()
 end
 
 function love.update(dt)
+  timer = timer + dt
   if not gameStarted or optionStarted then
     return
   end
@@ -78,12 +89,16 @@ function love.update(dt)
 
   end
 
-  if ball.x > screen_width / 2 then 
+  if ball.x > screen_width / 2 then
     if checkCollision(player2, ball) then
+      local sfx = collideSound:clone()
+      sfx:play()
       ball:bounceOff(player2)
     end
   else
     if checkCollision(player1, ball) then
+      local sfx = collideSound:clone()
+      sfx:play()
       ball:bounceOff(player1)
     end
   end
@@ -133,7 +148,6 @@ function love.draw()
 
       -- Scores
       scorepoint:draw()
-      print(ball.speed)
     end
 
 
