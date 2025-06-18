@@ -13,7 +13,7 @@ local optionStarted = false
 local roundEnd = false
 local isPaused = false
 
-local settings = { "BACKGROUND", "SCREEN SIZE"}
+local settings = { "BACKGROUND", "SCREEN SIZE", "BALL SPEED"}
 local selected_settings = 1
 local colors = { "BLACK", "BLUE", "GREEN", "ORANGE", "RED" }
 local rgb_colors = { {0, 0, 0}, {0, 0, 255}, {0, 255, 0}, {255, 165, 0}, {255, 0, 0} }
@@ -102,6 +102,8 @@ function love.draw()
   love.graphics.setBackgroundColor(r, g, b)
   if not gameStarted and not optionStarted then
     drawMenu()
+    player1.y = (love.graphics.getHeight() / 2) - screen_height/5/2
+    player2.y = (love.graphics.getHeight() / 2) -  screen_height/5/2
     scorepoint = Scorepoint(rgb_colors[actual_color])
     roundEnd = false
     ball = Ball(screen_width/2,screen_height/2, screen_height/64, calculateBallDirection(), speed)
@@ -137,6 +139,10 @@ function love.draw()
 
     if roundEnd then
       roundEnd = msgScreen:draw(lastScorer)
+      ball.speed = speed
+      ball.y = screen_height/2
+      player1.y = (love.graphics.getHeight() / 2) - screen_height/5/2
+      player2.y = (love.graphics.getHeight() / 2) -  screen_height/5/2
     end
   end
 end
@@ -175,8 +181,10 @@ function drawSettings()
     love.graphics.printf(option, 10, y, love.graphics.getWidth(), "left")
     if option == "BACKGROUND" then
       love.graphics.printf(colors[actual_color], -10, y, love.graphics.getWidth(), "right")
-    else
+    elseif option == "SCREEN SIZE" then
       love.graphics.printf(sizes[actual_size], -10, y, love.graphics.getWidth(), "right")
+    else
+      love.graphics.printf(speed, -10, y, love.graphics.getWidth(), "right")
     end
     y = y + screen_height / 12
   end
@@ -210,9 +218,6 @@ function love.keypressed(key)
       if selected_settings > #settings then selected_settings = 1 end
     elseif key == "escape" then
       optionStarted = false
-    elseif key == "return" or key == "enter" then
-      print("Seleccionaste: ", actual_color)
-      -- Aquí podrías implementar comportamiento real para cada configuración
     elseif selected_settings == 1 then
       if key == "right" then
         actual_color = actual_color + 1
@@ -234,6 +239,12 @@ function love.keypressed(key)
         actual_size = actual_size - 1
         if actual_size < 1 then actual_size = #sizes end
         resizeWindow()
+      end
+    elseif selected_settings == 3 then
+      if key == "right" then
+        speed = speed + 10
+      elseif key == "left" then
+        speed = speed - 10
       end
     end
   elseif gameStarted then
@@ -304,7 +315,7 @@ end
 
 -- Calculate initial direction of ball
 function calculateBallDirection()
-  local angle = math.random(-45, 45)
+  local angle = math.random(-20, 20)
     if math.random(0, 1) == 1 then
       angle = angle + 180
     end
