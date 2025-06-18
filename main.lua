@@ -37,6 +37,13 @@ local speed
 local timer = 0
 
 function love.load()
+  love.window.setTitle("PONG GAME")
+  local icon = love.image.newImageData("logo/NNugSj.png")
+  if icon then
+    love.window.setIcon(icon)
+  end
+
+
   backgroundMusic = love.audio.newSource("music/Undertale-Papyrus-Theme.ogg", "stream")
   backgroundMusic:setLooping(true)
   backgroundMusic:setVolume(0.3)
