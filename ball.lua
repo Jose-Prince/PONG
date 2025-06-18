@@ -6,6 +6,7 @@ function Ball:new(x, y, radius, direction, speed)
   self.radius = radius
   self.direction = direction
   self.speed = speed or 100
+  self.inc = speed * 0.05
 end
 
 function Ball:draw()
@@ -46,9 +47,11 @@ function Ball:bounceOff(player)
   if going_right then
     self.direction = math.pi - bounce_angle
     self.x = player.x - self.radius
+    self.speed = self.speed + 10
   else
     self.direction = bounce_angle
     self.x = player.x + player.width + self.radius
+    self.speed = self.speed + self.inc
   end
 end
 

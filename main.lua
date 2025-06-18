@@ -131,6 +131,7 @@ function love.draw()
 
       -- Scores
       scorepoint:draw()
+      print(ball.speed)
     end
 
 
