@@ -37,6 +37,10 @@ This is a modern implementation of the classic Pong arcade game featuring:
 
 ## Installation
 
+### Manual:
+
+For manual installation follow this steps:
+
 1. Download and install [LÖVE 2D](https://love2d.org/) for your operating system
 2. Clone or download this repository
 3. Ensure all required files are in the correct directories:
@@ -48,6 +52,14 @@ This is a modern implementation of the classic Pong arcade game featuring:
    - Dragging the game folder onto the Love2D executable
    - Running `love .` from the command line in the game directory
    - Creating a `.love` file by zipping the game files
+
+### Automatic:
+
+For automatic installation in Linux just download this bash script: [bash script](./pong.sh)
+
+For windows download this zip and execute the pong.exe file: [zip file](./pong_game.zip)
+
+**IMPORTANT: With the automatic installation you don't have to download manually love, I don't confirm the script works in all linux distributions**
 
 ## Game Features
 
